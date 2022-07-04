@@ -11,9 +11,17 @@ const typeDefs = gql`
     todos(completed: Boolean): [Todo!]!
     todo(id: ID): Todo
   }
+
+  type Users {
+    id: ID
+    username: String
+    passwordHash: String
+  }
+
   type User {
     name: String
     username: String
+    passwordHash: String
   }
 
   type Todo {
@@ -24,6 +32,7 @@ const typeDefs = gql`
 
   type Mutation {
     createTodo(title: String!, checked: Boolean!): Todo
+    createUser(username: String!, passwordHash: String!): User
   }
 `;
 
@@ -65,6 +74,15 @@ const createTodo = async (title, checked) => {
   return res[0];
 };
 
+export const createUser = async (username, passwordHash) => {
+  const res = await sql`
+    INSERT INTO users (username, password_hash)
+    VALUES (${username}, ${passwordHash})
+    RETURNING id, username;
+  `;
+  return res[0];
+};
+
 const users = [
   { name: 'Leeroy Jenkins', username: 'leeroy' },
   { name: 'Foo Bar', username: 'foobar' },
@@ -100,6 +118,9 @@ const resolvers = {
   Mutation: {
     createTodo(parent, { title, checked }) {
       return createTodo(title, checked);
+    },
+    createUser(parent, { username, passwordHash }) {
+      return createUser(username, passwordHash);
     },
   },
 };

@@ -1,10 +1,11 @@
-import Link from 'next/link'
-
-import queryGraphql from '../shared/query-graphql'
+import Link from 'next/link';
+import Header from '../components/header';
+import queryGraphql from '../shared/query-graphql';
 
 export default function UserListing({ users }) {
   return (
     <div>
+      <Header />
       <h1>User Listing</h1>
       <ul>
         {users.map((user) => (
@@ -16,7 +17,7 @@ export default function UserListing({ users }) {
         ))}
       </ul>
     </div>
-  )
+  );
 }
 
 export async function getStaticProps() {
@@ -27,6 +28,6 @@ export async function getStaticProps() {
         username
       }
     }
-  `)
-  return { props: { users } }
+  `);
+  return { props: { users } };
 }
