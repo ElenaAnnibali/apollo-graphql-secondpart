@@ -7,7 +7,7 @@ const sql = postgres();
 const typeDefs = gql`
   type Query {
     users: [User!]!
-    user(username: String): User
+    user(username: String, id: ID): User
     todos(completed: Boolean): [Todo!]!
     todo(id: ID): Todo
   }
@@ -19,6 +19,7 @@ const typeDefs = gql`
   }
 
   type User {
+    id: ID
     name: String
     username: String
     passwordHash: String
@@ -74,6 +75,13 @@ const createTodo = async (title, checked) => {
   return res[0];
 };
 
+const getUsers = async () => {
+  return await sql`
+    SELECT *
+    FROM users
+  `;
+};
+
 export const createUser = async (username, passwordHash) => {
   const res = await sql`
     INSERT INTO users (username, password_hash)
@@ -96,8 +104,8 @@ const todos = [
 
 const resolvers = {
   Query: {
-    users() {
-      return users;
+    users(parent, args) {
+      return getUsers();
     },
     user(parent, { username }) {
       return users.find((user) => user.username === username);
